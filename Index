@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wolf Delivery - สั่งเดลิเวอรี่</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-6">
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">🐺 Wolf Delivery สั่งด่วน</h2>
+        
+        <form id="orderForm" class="space-y-4">
+            <div>
+                <label class="block text-gray-700 font-medium">ชื่อผู้สั่ง:</label>
+                <input type="text" id="customerName" required class="w-full border rounded-lg p-2 mt-1 focus:ring focus:ring-blue-300">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium">เบอร์โทรศัพท์:</label>
+                <input type="tel" id="phone" required class="w-full border rounded-lg p-2 mt-1 focus:ring focus:ring-blue-300">
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium">ที่อยู่จัดส่ง:</label>
+                <textarea id="address" rows="3" required class="w-full border rounded-lg p-2 mt-1 focus:ring focus:ring-blue-300"></textarea>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium">รายการอาหาร/สินค้า:</label>
+                <textarea id="orderDetails" rows="3" required class="w-full border rounded-lg p-2 mt-1 focus:ring focus:ring-blue-300" placeholder="ระบุรายการและจำนวน..."></textarea>
+            </div>
+            <div>
+                <label class="block text-gray-700 font-medium">ยอดรวม (บาท):</label>
+                <input type="number" id="totalPrice" required class="w-full border rounded-lg p-2 mt-1 focus:ring focus:ring-blue-300">
+            </div>
+            
+            <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white font-bold p-3 rounded-lg hover:bg-blue-700 transition">
+                ยืนยันการสั่งซื้อ
+            </button>
+        </form>
+        
+        <div id="resultMsg" class="mt-4 text-center font-medium"></div>
+    </div>
+
+    <script>
+        // ⚠️ แทนที่ด้วย URL Web App ของ Google Apps Script ที่คุณคัดลอกมา
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxETEHAUyNCZ-5l1k7-5x3OzX2gxAMbTu53kHV1_NPeTR74_ZS7x-fU7W8qIQYAQVw_Gw/exec";
+
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const msg = document.getElementById('resultMsg');
+            
+            btn.disabled = true;
+            btn.innerText = "กำลังส่งออเดอร์...";
+            
+            const data = {
+                customerName: document.getElementById('customerName').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                orderDetails: document.getElementById('orderDetails').value,
+                totalPrice: document.getElementById('totalPrice').value
+            };
+
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // ใช้ป้องกันปัญหา CORS เบื้องต้นกับ Apps Script
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                msg.className = "mt-4 text-center font-medium text-green-600";
+                msg.innerText = "ส่งออเดอร์สำเร็จเรียบร้อย!";
+                document.getElementById('orderForm').reset();
+            } catch (error) {
+                msg.className = "mt-4 text-center font-medium text-red-600";
+                msg.innerText = "เกิดข้อผิดพลาด กรุณาลองใหม่";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "ยืนยันการสั่งซื้อ";
+            }
+        });
+    </script>
+</body>
+</html>
